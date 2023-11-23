@@ -11,7 +11,7 @@ class TeamYourNameBot(BaseBot):
         super().__init__(uid, name, color)
         # Your code start here
         # E.g initialize extra object variables
-        # Your code ends here chuj
+        # Your code ends here
 
     def init_board(self, cols: int, rows: int, win_length: int, obstacles: [(int, int)], time_given: int) -> None:
         """
