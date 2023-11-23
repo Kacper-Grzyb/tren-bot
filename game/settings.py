@@ -5,7 +5,7 @@ from bots.manual_bot import ManualBot
 from bots.pedestrian_bot import PedestrianBot
 from bots.random_bot import RandomBot
 from bots.smart_random_bot import SmartRandomBot
-from bots.team_your_name_bot import TeamYourNameBot  # Change this line according to the new names
+from bots.tren import TeamYourNameBot  # Change this line according to the new names
 
 
 class Settings:
