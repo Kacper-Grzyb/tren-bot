@@ -1,17 +1,20 @@
 from bots.base_bot import BaseBot
+import random
+from game.colors import Colors
+from game.board_cell import BoardCell
+from datetime import datetime
 
-
-class TeamYourNameBot(BaseBot):
+class TrenBot(BaseBot):
     def __init__(self, uid) -> None:
-        # Make your bot personal
-        # Your code start here
-        name = "TeamYourNameBot"
-        color = (0, 255, 0)  # RGB color values, set the values between 0 and 255
-        # Your code ends here
-        super().__init__(uid, name, color)
-        # Your code start here
+        name = "TrenBot"
+        color = (0, 255, 0) 
+        super().__init__(uid, name, color)  
+        self.rand = random.Random(datetime.now().timestamp())
+        self.cols = 0
+        self.rows = 0
+        self.board = [[int]]
+        self.uid = uid
         # E.g initialize extra object variables
-        # Your code ends here
 
     def init_board(self, cols: int, rows: int, win_length: int, obstacles: [(int, int)], time_given: int) -> None:
         """
@@ -24,7 +27,11 @@ class TeamYourNameBot(BaseBot):
         obstacles: The list of (x, y) coordinates of blocked board cells.
         time_given: The total time given to the player bot for the game in ns.
         """
-        pass
+        self.cols = cols
+        self.rows = rows
+        self.board = [[BoardCell.CLEAR for _ in range(rows)] for _ in range(cols)]
+        for x, y in obstacles:
+            self.board[x][y] = BoardCell.BLOCKED
 
     def make_a_move(self, time_left: int) -> (int, int):
         """
@@ -36,12 +43,10 @@ class TeamYourNameBot(BaseBot):
         Returns:
         tuple: containing the bot move with the order (x, y)
         """
-        # Implement the algorithm which will make the moves
-        # Your code starts here
         x = -1
         y = -1
-        # Your code ends here
-        return x, y
+        #I just made it return 0, 0 so our bot doesn't get immedietaly discualified
+        return 0, 0
 
     def notify_move(self, bot_uid: int, move: (int, int)) -> None:
         """
@@ -52,3 +57,6 @@ class TeamYourNameBot(BaseBot):
         move: A tuple representing the move coordinates (x, y).
         """
         (x, y) = move
+        if self.uid != bot_uid:
+            self.board[move[0]][move[1]] = BoardCell.BOT
+            print(f"Bot with id {bot_uid} made a move at coordinates: {move[0]}, {move[1]}")

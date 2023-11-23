@@ -5,7 +5,7 @@ from bots.manual_bot import ManualBot
 from bots.pedestrian_bot import PedestrianBot
 from bots.random_bot import RandomBot
 from bots.smart_random_bot import SmartRandomBot
-from bots.tren import TeamYourNameBot  # Change this line according to the new names
+from bots.tren import TrenBot  # Change this line according to the new names
 
 
 class Settings:
@@ -43,9 +43,9 @@ class Settings:
 
         # Players
         self.BOTS = [
-            'TeamYourNameBot',
-            'SmartRandomBot',
-            'SmartRandomBot'
+            'TrenBot',
+            'RandomBot',
+            'RandomBot'
         ]
 
         if os.path.exists(json_file_path):
