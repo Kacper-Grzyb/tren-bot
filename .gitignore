@@ -1,0 +1,6 @@
+__pycache__
+.venv
+*.ipynb
+.idea/
+venv/
+*.json
