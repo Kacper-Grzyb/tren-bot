@@ -7,7 +7,7 @@ from datetime import datetime
 class TrenBot(BaseBot):
     def __init__(self, uid) -> None:
         name = "TrenBot"
-        color = (0, 255, 0) 
+        color = (255, 56, 152) 
         super().__init__(uid, name, color)  
         self.rand = random.Random(datetime.now().timestamp())
         self.cols = 0
@@ -47,6 +47,13 @@ class TrenBot(BaseBot):
         y = -1
         #I just made it return 0, 0 so our bot doesn't get immedietaly discualified
         return 0, 0
+    
+    def interrupt_win(self, time_left: int) -> (int, int):
+        for y in range(self.board):
+            for x in range(self.board[y]):
+                pass
+                
+            
 
     def notify_move(self, bot_uid: int, move: (int, int)) -> None:
         """
@@ -58,5 +65,106 @@ class TrenBot(BaseBot):
         """
         (x, y) = move
         if self.uid != bot_uid:
-            self.board[move[0]][move[1]] = BoardCell.BOT
-            print(f"Bot with id {bot_uid} made a move at coordinates: {move[0]}, {move[1]}")
+            self.board[x][y] = bot_uid
+            print(f"Bot with id {bot_uid} made a move at coordinates: {x}, {y}")
+        
+        # now check for lines in each direction from the placed point to know if player is going to win
+        # this is definitely not the most optimal way of doing this shit but it works
+        # check vertically down
+        i = 1
+        winningCon = 5 #if someone finds where to access this things from the settings please change this variable to that
+        while x+1>len(self.board) and i<winningCon:
+            x+=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check vertically up
+        i = 1
+        while x-1>0 and i<winningCon:
+            x-=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check horizontally right
+        i = 1
+        while y+1<len(self.board[x]) and i<winningCon:
+            y+=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check horizontally left
+        i = 1
+        while y-1>0 and i<winningCon:
+            y-=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally up and right
+        i=1
+        while x+1<len(self.board) and y-1>0 and i<winningCon:
+            x+=1
+            y-=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally up and left
+        i=1
+        while x-11>0 and y-1>0 and i<winningCon:
+            x-=1
+            y-=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally down and right
+        i=1
+        while x+1<len(self.board) and y+1<len(self.board[x]) and i<winningCon:
+            x+=1
+            y+=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally down and left
+        i=1
+        while x-1>0 and y+1<len(self.board[x]) and i<winningCon:
+            x-=1
+            y+=1
+            if(self.board[x][y]!=bot_uid):
+                break
+            i+=1
+        if i == 4:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        
+        
+            
+            
+           
