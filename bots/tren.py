@@ -18,7 +18,7 @@ class TrenBot(BaseBot):
         self.winLength = 3
         # E.g initialize extra object variables
 
-    def interrupt_win(self, startX, startY) -> (int, int):
+    def interrupt_win(self, startX, startY, checkedSpots) -> (int, int):
         (x, y) = (startX, startY)
         nextID = self.uid+1
         # now check for lines in each direction from the placed point to know if player is going to win
@@ -27,6 +27,7 @@ class TrenBot(BaseBot):
         # check vertically down
         i = 1
         while x+1>len(self.board):
+            checkedSpots[x][y] = True
             if i==self.winLength-1:
                 return x+1, y
             x+=1
@@ -38,6 +39,7 @@ class TrenBot(BaseBot):
         i = 1
         x, y = startX, startY
         while x-1>0:
+            checkedSpots[x][y] = True
             if i == self.winLength-1:
                 return x-1, y
             x-=1
@@ -49,6 +51,7 @@ class TrenBot(BaseBot):
         i = 1
         x, y = 0, 0
         while y+1<len(self.board[x]):
+            checkedSpots[x][y] = True
             if i == self.winLength-1:
                 return x, y+1
             y+=1
@@ -60,6 +63,7 @@ class TrenBot(BaseBot):
         i = 1
         x, y = startX, startY
         while y-1>0:
+            checkedSpots[x][y] = True
             if i == self.winLength-1:
                 return x, y-1
             y-=1
@@ -71,6 +75,7 @@ class TrenBot(BaseBot):
         i=1
         x, y = startX, startY
         while x+1<len(self.board) and y-1>0:
+            checkedSpots[x][y] = True
             if(i == self.winLength):
                 return x+1, y-1
             x+=1
@@ -83,6 +88,7 @@ class TrenBot(BaseBot):
         i=1
         x, y = startX, startY
         while x-1>0 and y-1>0 and i<self.winLength:
+            checkedSpots[x][y] = True
             if i == self.winLength-1:
                 return x-1, y-1
             x-=1
@@ -95,6 +101,7 @@ class TrenBot(BaseBot):
         i=1
         x, y = startX, startY
         while x+1<len(self.board) and y+1<len(self.board[x]) and i<self.winLength:
+            checkedSpots[x][y] = True
             if i == self.winLength-1:
                 return x+1, y+1
             x+=1
@@ -107,6 +114,7 @@ class TrenBot(BaseBot):
         i=1
         x, y = startX, startY
         while x-1>0 and y+1<len(self.board[x]) and i<self.winLength:
+            checkedSpots[x][y] = True
             if i == self.winLength-1:
                 return x-1, y+1
             x-=1
@@ -135,6 +143,65 @@ class TrenBot(BaseBot):
         for x, y in obstacles:
             self.board[x][y] = BoardCell.BLOCKED
 
+    
+    def score(self):
+        score = 0
+        for row in self.board:
+            for cell in row:
+                if cell == self.uid: 
+                    score += 1
+                else: 
+                    score -= 1
+        return score
+
+    def minimax(self, depth, alpha, beta, maximizingPlayer):
+        if depth == 0:
+            return self.score()
+
+        if maximizingPlayer:
+            maxEval = float('-inf')
+            for x in range(len(self.board)):
+                for y in range(len(self.board[x])):
+                    if self.board[x][y] == BoardCell.CLEAR:
+                        self.board[x][y] = self.uid  # Player's move
+                        eval = self.minimax(depth - 1, alpha, beta, False)
+                        self.board[x][y] = BoardCell.CLEAR  # Undo move
+                        maxEval = max(maxEval, eval)
+                        alpha = max(alpha, eval)
+                        if beta <= alpha:
+                            break
+            return maxEval
+
+        else:  # Minimizing player
+            minEval = float('inf')
+            for x in range(len(self.board)):
+                for y in range(len(self.board[x])):
+                    if self.board[x][y] == BoardCell.CLEAR:
+                        self.board[x][y] = -1  # Opponent's move
+                        eval = self.minimax(depth - 1, alpha, beta, True)
+                        self.board[x][y] = BoardCell.CLEAR  # Undo move
+                        minEval = min(minEval, eval)
+                        beta = min(beta, eval)
+                        if beta <= alpha:
+                            break
+            return minEval
+
+
+    def find_best_move(self):
+        bestScore = float('-inf')
+        move = (0, 0)
+        for x in range(len(self.board)):
+            for y in range(len(self.board[x])):
+                if self.board[x][y] == BoardCell.CLEAR:
+                    self.board[x][y] = self.uid
+                    score = self.minimax(1, float('-inf'), float('-inf'), False)
+                    self.board[x][y] = BoardCell.CLEAR
+                    if score > bestScore:
+                        bestScore = score
+                        move = (x, y)
+
+        return move
+
     def make_a_move(self, time_left: int) -> (int, int):
         """
         This method is called when the bot needs to make a move. It will calculate the best move with the given board.
@@ -144,46 +211,39 @@ class TrenBot(BaseBot):
 
         Returns:
         tuple: containing the bot move with the order (x, y)
-        """
+        
+        checkedSpots = [[False for _ in range(self.rows)] for _ in range(self.rows)]
         (x, y) = NULL, NULL
-        i = 0
-        j = 0
-        while i < len(self.board):
-            while j < len(self.board[i]):
-                if(j==self.uid+1): 
-                    (x, y) = self.interrupt_win(i, j)
-                    i = len(self.board)
-                    break
-                j+=1
-            i+=1
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                if(self.board[i][j]==self.uid+1 and checkedSpots[i][j]==False):
+                    print(f"Blocking move at {i} {j}")
+                    (x, y) = self.interrupt_win(i, j, checkedSpots)
+                    checkedSpots[x][y]=True
                     
-        if (x, y) != (NULL, NULL):
+        if (x, y) != (NULL, NULL) and self.isValidMove(x, y):
             return x, y
+            #print(f"Blocked a line on {x},{y}")
         else:
-            x = random.randrange(0, len(self.board))
-            y = random.randrange(0, len(self.board[x]))
-            while(self.board[x][y]!=BoardCell.CLEAR):
+            while(not self.isValidMove(x, y)):
                 x = random.randrange(0, len(self.board))
                 y = random.randrange(0, len(self.board[x]))
-  
-        #I just made it return 0, 0 so our bot doesn't get immedietaly discualified
         return x, y 
+        """
+
+        return self.find_best_move()
 
                 
-            
+    def isValidMove(self, col: int, row: int) -> bool:
+        return row >=0 and row < len(self.board[col]) and col >= 0 and col < len(self.board) and self.board[col][row] == BoardCell.CLEAR
+    
 
     def notify_move(self, bot_uid: int, move: (int, int)) -> None:
         """
         This method is called when a move is made by a player.
-
-        Parameters: 
-        bot_uid: The Unique ID of the player making the move.
-        move: A tuple representing the move coordinates (x, y).
         """
         (x, y) = move
-        if self.uid != bot_uid:
-            self.board[x][y] = bot_uid
-            #print(f"Bot with id {bot_uid} made a move at coordinates: {x}, {y}")
+        self.board[x][y] = bot_uid
         
         
         
