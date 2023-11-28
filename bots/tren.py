@@ -14,6 +14,7 @@ class TrenBot(BaseBot):
         self.rows = 0
         self.board = [[int]]
         self.uid = uid
+        self.winLength = 3
         # E.g initialize extra object variables
 
     def init_board(self, cols: int, rows: int, win_length: int, obstacles: [(int, int)], time_given: int) -> None:
@@ -29,6 +30,7 @@ class TrenBot(BaseBot):
         """
         self.cols = cols
         self.rows = rows
+        self.winLength = win_length
         self.board = [[BoardCell.CLEAR for _ in range(rows)] for _ in range(cols)]
         for x, y in obstacles:
             self.board[x][y] = BoardCell.BLOCKED
@@ -43,15 +45,109 @@ class TrenBot(BaseBot):
         Returns:
         tuple: containing the bot move with the order (x, y)
         """
+                
+
         x = -1
         y = -1
         #I just made it return 0, 0 so our bot doesn't get immedietaly discualified
         return 0, 0
     
-    def interrupt_win(self, time_left: int) -> (int, int):
-        for y in range(self.board):
-            for x in range(self.board[y]):
-                pass
+    def interrupt_win(self, time_left: int) -> None:
+        nextID = self.uid+1
+        # now check for lines in each direction from the placed point to know if player is going to win
+        # this is definitely not the most optimal way of doing this shit but it works
+        # check vertically down
+        i = 1
+        while x+1>len(self.board) and i<self.winLength:
+            x+=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check vertically up
+        i = 1
+        while x-1>0 and i<self.winLength:
+            x-=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check horizontally right
+        i = 1
+        while y+1<len(self.board[x]) and i<self.winLength:
+            y+=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check horizontally left
+        i = 1
+        while y-1>0 and i<self.winLength:
+            y-=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally up and right
+        i=1
+        while x+1<len(self.board) and y-1>0 and i<self.winLength:
+            x+=1
+            y-=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally up and left
+        i=1
+        while x-11>0 and y-1>0 and i<self.winLength:
+            x-=1
+            y-=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally down and right
+        i=1
+        while x+1<len(self.board) and y+1<len(self.board[x]) and i<self.winLength:
+            x+=1
+            y+=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass
+        
+        # check diagonally down and left
+        i=1
+        while x-1>0 and y+1<len(self.board[x]) and i<self.winLength:
+            x-=1
+            y+=1
+            if(self.board[x][y]!=nextID):
+                break
+            i+=1
+        if i == self.winLength-1:
+            # store somewhere that player bot_uid is about to win
+            pass        
+
                 
             
 
@@ -66,102 +162,9 @@ class TrenBot(BaseBot):
         (x, y) = move
         if self.uid != bot_uid:
             self.board[x][y] = bot_uid
-            print(f"Bot with id {bot_uid} made a move at coordinates: {x}, {y}")
+            #print(f"Bot with id {bot_uid} made a move at coordinates: {x}, {y}")
         
-        # now check for lines in each direction from the placed point to know if player is going to win
-        # this is definitely not the most optimal way of doing this shit but it works
-        # check vertically down
-        i = 1
-        winningCon = 5 #if someone finds where to access this things from the settings please change this variable to that
-        while x+1>len(self.board) and i<winningCon:
-            x+=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
         
-        # check vertically up
-        i = 1
-        while x-1>0 and i<winningCon:
-            x-=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
-        
-        # check horizontally right
-        i = 1
-        while y+1<len(self.board[x]) and i<winningCon:
-            y+=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
-        
-        # check horizontally left
-        i = 1
-        while y-1>0 and i<winningCon:
-            y-=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
-        
-        # check diagonally up and right
-        i=1
-        while x+1<len(self.board) and y-1>0 and i<winningCon:
-            x+=1
-            y-=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
-        
-        # check diagonally up and left
-        i=1
-        while x-11>0 and y-1>0 and i<winningCon:
-            x-=1
-            y-=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
-        
-        # check diagonally down and right
-        i=1
-        while x+1<len(self.board) and y+1<len(self.board[x]) and i<winningCon:
-            x+=1
-            y+=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
-        
-        # check diagonally down and left
-        i=1
-        while x-1>0 and y+1<len(self.board[x]) and i<winningCon:
-            x-=1
-            y+=1
-            if(self.board[x][y]!=bot_uid):
-                break
-            i+=1
-        if i == 4:
-            # store somewhere that player bot_uid is about to win
-            pass
         
         
         
